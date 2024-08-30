@@ -10,6 +10,19 @@ from red_black_tree import RedBlackTree
 # Load the data
 data = pd.read_excel('C:/Users/nmegh/Downloads/proj/testdata.xlsx')
 
+# Define quicksort function
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+# Apply quicksort to the data (assumed to be numerical or categorical)
+data = data.apply(lambda col: quicksort(col) if col.dtype in [int, float] else col)
+
 # Convert categorical columns to numerical format
 data['Season'] = data['Season'].map({'Winter': 0, 'Summer': 1})
 data['Event'] = data['Event'].map({'Yes': 1, 'No': 0})
@@ -59,7 +72,8 @@ variables = probabilities.variables
 
 # Get the names of the categories from the Bayesian Network
 variable_name = variables[0]  # Assuming there is only one variable
-outcomes = model.get_cpds(variable_name).state_names[variable_name]
+cpd = model.get_cpds(variable_name)
+outcomes = cpd.state_names[variable_name]
 
 # Calculate the weighted average of the probabilities
 estimated_percentage = sum(val * outcome for val, outcome in zip(values, outcomes))
